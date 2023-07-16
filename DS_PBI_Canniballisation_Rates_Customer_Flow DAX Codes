@@ -1,0 +1,47 @@
+This file is representing DAX code that calculates customer distribution percentage
+
+%Share_Address = 
+
+VAR Orders= SUM(DS_gigi_Cannibalisation_Rate[Total Orders])
+
+VAR Total_Orders=  
+    CALCULATE( SUM(DS_gigi_Cannibalisation_Rate[Total Orders]),
+    ALLEXCEPT(DS_gigi_Cannibalisation_Rate,DS_gigi_Cannibalisation_Rate[Store_Adress])
+    )
+
+VAR RESULT = 
+    DIVIDE( 
+        Orders,Total_Orders)
+
+RETURN RESULT 
+
+--------------------------------------------------------------------------------------------
+
+%share = 
+VAR Orders= SUM(DS_gigi_Cannibalisation_Rate[Total Orders])
+
+VAR Total_Orders=  
+    CALCULATE( SUM(DS_gigi_Cannibalisation_Rate[Total Orders]),
+    ALLEXCEPT(DS_gigi_Cannibalisation_Rate,DS_gigi_Cannibalisation_Rate[Store name])
+    )
+
+VAR RESULT = 
+    DIVIDE( 
+        Orders,Total_Orders)
+
+RETURN RESULT 
+
+--------------------------------------------------------------------------------------------
+
+I  decided to represent given matrixes with total sum of orders and percentages aswell, so i wrote SWITCH statement and assigned it to slicer
+
+SWITCH1 = 
+    SWITCH(
+        TRUE(),
+        SELECTEDVALUE('Order Type'[Order Type])="Percent of Orders" && ISINSCOPE(DS_gigi_Cannibalisation_Rate[Store name]),FORMAT([%share],"#.0#%"),
+        SELECTEDVALUE('Order Type'[Order Type])="Sum of Orders" && ISINSCOPE(DS_gigi_Cannibalisation_Rate[Store name]),SUM(DS_gigi_Cannibalisation_Rate[Total Orders]),
+        SELECTEDVALUE('Order Type'[Order Type])="Percent of Orders" && ISINSCOPE(DS_gigi_Cannibalisation_Rate[MFS_Store_Address]),FORMAT([%Share_Address],"#.0#%"),
+        SELECTEDVALUE('Order Type'[Order Type])="Sum of Orders" && ISINSCOPE(DS_gigi_Cannibalisation_Rate[MFS_Store_Address]),SUM(DS_gigi_Cannibalisation_Rate[Total Orders])
+    )
+
+
